@@ -181,11 +181,11 @@
           resultArea.style.display = "none";
 
           try {
+            let questionDivText = "";
             let parsedJson = JSON.parse(jsonInput.value);
 
             parsedJson.questions.forEach(function (question, index, array) {
-              let questionDiv = document.createElement("div");
-              let questionDivText = `<strong>${question.text}</strong><br>`;
+              questionDivText += `<strong>${question.text}</strong><br>`;
 
               let trueAnswer = parsedJson.stat.find(
                 (trueAnswer) => trueAnswer.question_id === question.id
@@ -198,10 +198,10 @@
                   questionDivText += `⚪️${answer.text}<br>`;
                 }
               });
-              questionDiv.innerHTML = `${questionDivText}<br>`;
-              resultArea.append(questionDiv);
+              questionDivText += `<br>`;
             });
 
+            resultArea.innerHTML = `${questionDivText}`;
             resultAreaInput.style.display = "none";
             resultArea.style.display = "block";
           } catch {
