@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TestsCheat</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="author" content="Maxim Kliuba" />
+
+    <style type="text/css">
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      input {
+        margin: 0;
+        padding: 0;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+      }
+
+      body {
+        background-color: #f0ebf8;
+        color: black;
+        font-family: "Google Sans", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 18px;
+      }
+
+      .button {
+        background-color: #7248b9;
+        height: 50px;
+        width: 200px;
+        border-radius: 25px;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin: 10px;
+        color: white;
+        font-size: 20px;
+        border: none;
+        outline: none;
+        user-select: none;
+        cursor: pointer;
+      }
+
+      #instruction_button {
+        float: right;
+        margin: 0px;
+        margin-right: 10px;
+        width: 50px;
+      }
+
+      #instruction_block {
+        background-color: white;
+        border-radius: 25px;
+        padding: 15px;
+        margin: 10px;
+        margin-bottom: 20px;
+        display: none;
+      }
+
+      #instruction_list {
+        margin-left: 20px;
+      }
+
+      .link_button {
+        background-color: #7248b9;
+        height: 50px;
+        width: 200px;
+        border-radius: 25px;
+        font-size: 20px;
+        margin: 10px;
+      }
+
+      .link_button a {
+        display: block;
+        height: 50px;
+        line-height: 50px;
+        text-decoration: none;
+        color: white;
+        text-align: center;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      #site_link_box {
+        background-color: white;
+        height: 50px;
+        width: 200px;
+        border-radius: 25px;
+        font-size: 20px;
+        margin: 10px;
+        margin-bottom: 20px;
+      }
+
+      #site_link_box a {
+        display: block;
+        height: 50px;
+        line-height: 50px;
+        text-decoration: none;
+        color: black;
+        text-align: center;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      #json_input_box {
+        padding: 10px;
+      }
+
+      .text_input {
+        background-color: white;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        height: 50px;
+        width: 100%;
+        border-radius: 25px;
+        padding: 10px;
+        color: black;
+        font-size: 18px;
+        border: none;
+        outline: none;
+        user-select: none;
+      }
+
+      #result_area_input {
+        color: red;
+      }
+
+      #result_area_box {
+        padding: 10px;
+      }
+
+      #result_area {
+        background-color: white;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        min-height: 50px;
+        display: block;
+        border-radius: 25px;
+        padding: 10px;
+        color: black;
+        font-size: 18px;
+        font-family: "Google Sans", Roboto, Helvetica, Arial, sans-serif;
+        display: none;
+      }
+
+      .bottom_text {
+        text-align: center;
+        color: gray;
+        margin: 20px;
+      }
+    </style>
+
+    <script type="text/javascript">
+      window.onload = function () {
+        let instructionButton = document.getElementById("instruction_button");
+        let instructionBlock = document.getElementById("instruction_block");
+        let isInstructionBlockVisible = false;
+
+        let jsonInput = document.getElementById("json_input");
+        let parseButton = document.getElementById("parse_button");
+        let resultAreaInput = document.getElementById("result_area_input");
+        let resultArea = document.getElementById("result_area");
+
+        function instructionButtonOnClick() {
+          if (!isInstructionBlockVisible) {
+            instructionBlock.style.display = "block";
+            instructionButton.value = "×";
+            isInstructionBlockVisible = true;
+          } else {
+            instructionBlock.style.display = "none";
+            instructionButton.value = "?";
+            isInstructionBlockVisible = false;
+          }
+        }
+
+        function parseButtonOnClick() {
+          resultAreaInput.value = "";
+          resultAreaInput.style.display = "block";
+          resultArea.style.display = "none";
+
+          try {
+            let parsedJson = JSON.parse(jsonInput.value);
+
+            parsedJson.questions.forEach(function (question, index, array) {
+              let questionDiv = document.createElement("div");
+              let questionDivText = `<strong>${question.text}</strong><br>`;
+
+              let trueAnswer = parsedJson.stat.find(
+                (trueAnswer) => trueAnswer.question_id === question.id
+              );
+
+              question.answers.forEach(function (answer, index, array) {
+                if (answer.id === trueAnswer.true_answer_id) {
+                  questionDivText += `⚫️${answer.text}<br>`;
+                } else {
+                  questionDivText += `⚪️${answer.text}<br>`;
+                }
+              });
+              questionDiv.innerHTML = `${questionDivText}<br>`;
+              resultArea.append(questionDiv);
+            });
+
+            resultAreaInput.style.display = "none";
+            resultArea.style.display = "block";
+          } catch {
+            resultAreaInput.value = "Упс... щось пішло не так";
+          }
+        }
+
+        instructionButton.addEventListener("click", instructionButtonOnClick);
+        parseButton.addEventListener("click", parseButtonOnClick);
+      };
+    </script>
+  </head>
+
+  <body>
+    <div>
+      <input class="button" id="instruction_button" type="button" value="?" />
+    </div>
+    <div id="instruction_block">
+      <b>Інструкція</b>
+      <div>
+        <br />
+        <ol id="instruction_list">
+          <li>
+            Перейти на сайт
+            <a href="http://tests.if.ua/" target="_blank">http://tests.if.ua</a>
+            і розпочати необхідний тест (для користувачів IOS можливо буде
+            необхідно відкрити сайт тестів вручну через браузер, а дану сторінку
+            за допомогою сервісів типу "Documents");
+          </li>
+          <li>Натиснути на кнопку "Завершити тест";</li>
+          <li>
+            Повернутися сюди і натиснути на кнопку "Надіслати запит" (після
+            цього повинна відкритися нова вкладка) (для користувачів IOS
+            необхідно вручну у тому ж браузері перейти за посиланням
+            <a href="http://tests.if.ua/api/Stat" target="_blank"
+              >http://tests.if.ua/api/Stat</a
+            >);
+          </li>
+          <li>
+            Скопіювати увесь текст (для цього зручно використовувати комбінацію
+            клавіш Ctrl+a і Ctrl+c);
+          </li>
+          <li>
+            Скопійований текст необхідно вставити у поле під кнопкою "Надіслати
+            запит";
+          </li>
+          <li>
+            Для отримання відповідей потрібно натиснути на кнопку "Нагнути
+            медичний" (відповіді появляться у тексовому полі під кнопкою);
+          </li>
+          <li>Тішитися :)</li>
+        </ol>
+        <br />
+        ВАЖЛИВО: усі операції необхідно проводити у одному браузері.
+      </div>
+    </div>
+    <div id="site_link_box">
+      <a href="http://tests.if.ua/" target="_blank">http://tests.if.ua</a>
+    </div>
+    <div class="link_button">
+      <a href="http://tests.if.ua/api/Stat" target="_blank">Надіслати запит</a>
+    </div>
+    <div id="json_input_box">
+      <input
+        class="text_input"
+        id="json_input"
+        type="text"
+        placeholder="Вставляй скопійований текст сюди"
+      />
+    </div>
+    <div>
+      <input
+        class="button"
+        id="parse_button"
+        type="button"
+        value="Нагнути медичний"
+      />
+    </div>
+    <div id="result_area_box">
+      <input
+        class="text_input"
+        id="result_area_input"
+        type="text"
+        placeholder="Тут будуть відповіді"
+        readonly
+      />
+      <div id="result_area"></div>
+    </div>
+    <div class="bottom_text">Created by Maxim Kliuba</div>
+  </body>
+</html>
